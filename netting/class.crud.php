@@ -20,6 +20,119 @@ class crud
         }
     }
 
+    public function addValue($args)
+    {
+        $values = implode(",", array_map(function ($item) {
+            return $item . "=?";
+        }, array_keys($args)));
+
+        return $values;
+    }
+
+    public function insert($table, $values, $options = [])
+    {
+        try {
+
+            if (!empty($_FILES[$options['file_name']]['name'])) {
+
+                $name_y = $this->imageUpload(
+                    $_FILES[$options['file_name']]['name'],
+                    $_FILES[$options['file_name']]['size'],
+                    $_FILES[$options['file_name']]['tmp_name'],
+                    $options['dir_key']
+                );
+
+                if (isset($name_y['error'])) {
+                    throw new Exception($name_y['error']);
+                }
+                $values += [$options['file_name'] => $name_y];
+            }
+
+            if (isset($options['pass_key'])) {
+                $values[$options['pass_key']] = md5($values[$options['pass_key']]);
+            }
+
+            unset($values[$options['insert_key']]);
+
+            $stmt = $this->db->prepare("INSERT INTO $table set {$this->addValue($values)}");
+            $update = $stmt->execute(array_values($values));
+            if ($update) {
+                return ['status' => TRUE];
+            } else {
+                return ['status' => FALSE];
+            }
+        } catch (\Throwable $th) {
+
+            return ['status' => FALSE, 'error' => $th->getMessage()];
+        }
+    }
+
+    public function update($table, $values, $options = [])
+    {
+        try {
+
+            if (!empty($_FILES[$options['file_name']]['name'])) {
+
+                $name_y = $this->imageUpload(
+                    $_FILES[$options['file_name']]['name'],
+                    $_FILES[$options['file_name']]['size'],
+                    $_FILES[$options['file_name']]['tmp_name'],
+                    $options['dir_key']
+                );
+
+                if (isset($name_y['error'])) {
+                    throw new Exception($name_y['error']);
+                }
+                $values += [$options['file_name'] => $name_y];
+            }
+
+            if (isset($options['pass_key'])) {
+                $values[$options['pass_key']] = md5($values[$options['pass_key']]);
+            }
+
+            unset($values[$options['insert_key']]);
+
+            $stmt = $this->db->prepare("INSERT INTO $table set {$this->addValue($values)}");
+            $update = $stmt->execute(array_values($values));
+            if ($update) {
+                return ['status' => TRUE];
+            } else {
+                return ['status' => FALSE];
+            }
+        } catch (\Throwable $th) {
+
+            return ['status' => FALSE, 'error' => $th->getMessage()];
+        }
+    }
+
+    public function imageUpload($name, $size, $tmp_name, $dir)
+    {
+        try {
+            $izinli_uzantilar = ["jpg", "jpge", "png", "gif"];
+            $ext = strtolower(substr($name, strpos($name, ".") + 1));
+
+            if (!in_array($ext, $izinli_uzantilar)) {
+                throw new Exception("Sadece Jpg | png | gif uzantılar kabul edilmektedir.");
+            }
+
+            if ($size > 1048576) {
+                throw new Exception("Dosya boyutu çok büyük. (Min 1mb)");
+            }
+
+
+            $name_y = uniqid() . "." . $ext;
+
+            if (!@move_uploaded_file($tmp_name, "dimg/$dir/$name_y")) {
+                throw new Exception("Dosya yükleme hatası...");
+            }
+
+            return $name_y;
+        } catch (\Throwable $th) {
+
+            return ['status' => FALSE, 'error' => $th->getMessage()];
+        }
+    }
+
     public function adminInsert($admins_namesurname, $admins_username, $admins_pass, $admin_status)
     {
 
@@ -31,7 +144,6 @@ class crud
             } else {
                 return ['status' => FALSE];
             }
-            
         } catch (\Throwable $th) {
 
             return ['status' => FALSE, 'error' => $th->getMessage()];
@@ -88,8 +200,19 @@ class crud
 
             return $stmt;
         } catch (\Throwable $th) {
-            echo $th->getMessage();
-            return false;
+            return ['status' => FALSE, 'error' => $th->getMessage()];
+        }
+    }
+
+    public function wRead($table, $columns, $values, $options = [])
+    {
+        try {
+            $stmt = $this->db->prepare("SELECT * FROM $table WHERE $columns=?");
+            $stmt->execute([htmlspecialchars($values)]);
+
+            return $stmt;
+        } catch (\Throwable $th) {
+            return ['status' => FALSE, 'error' => $th->getMessage()];
         }
     }
 }

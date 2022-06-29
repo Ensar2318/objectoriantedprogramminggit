@@ -11,7 +11,7 @@
           <!-- Sidebar user panel (optional) -->
           <div class="user-panel mt-3 pb-3 mb-3 d-flex">
               <div class="image">
-                  <img src="dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
+                  <img src="dimg/admins/<?php echo $_SESSION['admins']['admins_file'] ?>" class="img-circle elevation-2" alt="User Image">
               </div>
               <div class="info">
                   <a href="#" class="d-block"><?php echo $_SESSION['admins']['admins_namesurname'] ?></a>
@@ -34,12 +34,18 @@
                       </a>
                       <ul class="nav nav-treeview">
                           <li class="nav-item">
+                              <a href="users.php" class="nav-link">
+                                  <i class="nav-icon fa fa-user"></i>
+                                  <p>Kullanıcılar</p>
+                              </a>
+                          </li>
+                          <li class="nav-item">
                               <a href="admins.php" class="nav-link">
-                              <i class="nav-icon fa fa-user"></i>
+                                  <i class="nav-icon fa fa-user"></i>
                                   <p>Yöneticiler</p>
                               </a>
                           </li>
-                   
+
                       </ul>
                   </li>
 
