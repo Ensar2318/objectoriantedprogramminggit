@@ -88,12 +88,7 @@ $row = $sql->fetchAll(PDO::FETCH_ASSOC);
     ?>
 
     <!-- Admin Update İşlemi -->
-    <?php if (isset($_GET['adminUpdate'])) {
-
-      $sql_selected = $db->wRead("admins", "admins_id", $_GET['admins_id']);
-      $row_selected = $sql_selected->fetch(PDO::FETCH_ASSOC);
-
-    ?>
+    <?php if (isset($_GET['adminUpdate'])) {?>
       <div class="card">
         <a style="margin-right: auto;" class="btn btn-danger btn-sm " href="admins.php">kapat</a>
         <div class="card-header">
@@ -103,7 +98,18 @@ $row = $sql->fetchAll(PDO::FETCH_ASSOC);
         <div class="card-body">
           <?php
           if (isset($_POST['admins_update'])) {
-            $status;
+            $status = $db->update(
+              "admins",
+              $_POST,
+              [
+                'insert_key' => 'admins_update',
+                'columns'=>'admins_id',
+                'dir_key' => 'admins',
+                'file_name' => 'admins_file',
+                'requiredpass_key'=>'admins_pass',
+                'file_delete'=>'old_image'
+              ]
+            );
 
             if ($status['status']) {
               echo "<div class='alert alert-success'>Kayıt Başarılı.</div>";
@@ -111,6 +117,8 @@ $row = $sql->fetchAll(PDO::FETCH_ASSOC);
               echo "<div class='alert alert-danger'>{$status['error']}</div>";
             }
           }
+          $sql_selected = $db->wRead("admins", "admins_id", $_GET['admins_id']);
+          $row_selected = $sql_selected->fetch(PDO::FETCH_ASSOC);
           ?>
 
           <form class="row g-3" enctype="multipart/form-data" method="POST">
@@ -126,6 +134,7 @@ $row = $sql->fetchAll(PDO::FETCH_ASSOC);
             <div class="col-md-12">
               <label class="form-label">Resim Seç</label>
               <input type="file" class="form-control" name="admins_file">
+              <input type="hidden" value="<?php echo $row_selected['admins_file'] ?>" name="old_image">
             </div>
             <div class="col-md-12 mt-3">
               <label class="form-label">Ad Soyad</label>
@@ -148,7 +157,7 @@ $row = $sql->fetchAll(PDO::FETCH_ASSOC);
                 <option value="0" <?php echo $row_selected['admin_status'] == 0 ? 'selected' : '' ?>>Pasif</option>
               </select>
             </div>
-
+            <input type="text" hidden value="<?php echo $row_selected['admins_id'] ?>" class="form-control" name="admins_id">
             <div class="col-12 mt-3">
               <button type="submit" class="btn btn-success" name="admins_update">Düzenle</button>
             </div>

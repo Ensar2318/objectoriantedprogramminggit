@@ -77,7 +77,8 @@ class crud
                     $_FILES[$options['file_name']]['name'],
                     $_FILES[$options['file_name']]['size'],
                     $_FILES[$options['file_name']]['tmp_name'],
-                    $options['dir_key']
+                    $options['dir_key'],
+                    $values[$options['file_delete']]
                 );
 
                 if (isset($name_y['error'])) {
@@ -89,11 +90,27 @@ class crud
             if (isset($options['pass_key'])) {
                 $values[$options['pass_key']] = md5($values[$options['pass_key']]);
             }
+            if (empty($values[$options['requiredpass_key']])) {
+                unset($values[$options['requiredpass_key']]);
+            }
 
+
+            $columns_id = $values[$options['columns']];
             unset($values[$options['insert_key']]);
+            unset($values[$options['columns']]);
+            unset($values[$options['file_delete']]);
+            $values_execute = $values;
+            $values_execute += [$options['columns'] => $columns_id];
+            // echo "<pre>";
+            // echo print_r(array_values($values));
+            // echo print_r($values);
+            // echo print_r($values_execute);
+            // exit;
 
-            $stmt = $this->db->prepare("INSERT INTO $table set {$this->addValue($values)}");
-            $update = $stmt->execute(array_values($values));
+
+
+            $stmt = $this->db->prepare("UPDATE $table set {$this->addValue($values)} WHERE {$options['columns']}=?");
+            $update = $stmt->execute(array_values($values_execute));
             if ($update) {
                 return ['status' => TRUE];
             } else {
@@ -105,12 +122,11 @@ class crud
         }
     }
 
-    public function imageUpload($name, $size, $tmp_name, $dir)
+    public function imageUpload($name, $size, $tmp_name, $dir, $file_delete = null)
     {
         try {
             $izinli_uzantilar = ["jpg", "jpge", "png", "gif"];
             $ext = strtolower(substr($name, strpos($name, ".") + 1));
-
             if (!in_array($ext, $izinli_uzantilar)) {
                 throw new Exception("Sadece Jpg | png | gif uzantılar kabul edilmektedir.");
             }
@@ -125,7 +141,9 @@ class crud
             if (!@move_uploaded_file($tmp_name, "dimg/$dir/$name_y")) {
                 throw new Exception("Dosya yükleme hatası...");
             }
-
+            if (!empty($file_delete)) {
+                unlink("dimg/$dir/$file_delete");
+            }
             return $name_y;
         } catch (\Throwable $th) {
 
