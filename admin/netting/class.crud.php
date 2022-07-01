@@ -1,5 +1,6 @@
 <?php
 session_start();
+ob_start();
 require_once 'dbconfig.php';
 class crud
 {
@@ -90,8 +91,10 @@ class crud
             if (isset($options['pass_key'])) {
                 $values[$options['pass_key']] = md5($values[$options['pass_key']]);
             }
-            if (empty($values[$options['requiredpass_key']])) {
-                unset($values[$options['requiredpass_key']]);
+            if (isset($options['requiredpass_key'])) {
+                if (empty($values[$options['requiredpass_key']])) {
+                    unset($values[$options['requiredpass_key']]);
+                }
             }
 
 
@@ -118,6 +121,23 @@ class crud
             }
         } catch (\Throwable $th) {
 
+            return ['status' => FALSE, 'error' => $th->getMessage()];
+        }
+    }
+
+    public function delete($table, $columns, $values, $fileName = null)
+    {
+
+        try {
+            if (!empty($fileName)) {
+                unlink("dimg/$table/$fileName");
+            }
+
+            $stmt = $this->db->prepare("DELETE FROM $table WHERE $columns=?");
+            $stmt->execute([htmlspecialchars($values)]);
+
+            return ['status' => TRUE];
+        } catch (\Throwable $th) {
             return ['status' => FALSE, 'error' => $th->getMessage()];
         }
     }
@@ -227,6 +247,18 @@ class crud
         try {
             $stmt = $this->db->prepare("SELECT * FROM $table WHERE $columns=?");
             $stmt->execute([htmlspecialchars($values)]);
+
+            return $stmt;
+        } catch (\Throwable $th) {
+            return ['status' => FALSE, 'error' => $th->getMessage()];
+        }
+    }
+
+    public function qSql($sql, $options = [])
+    {
+        try {
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
 
             return $stmt;
         } catch (\Throwable $th) {

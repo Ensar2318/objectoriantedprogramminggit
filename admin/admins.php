@@ -1,8 +1,7 @@
 <?php
 require_once("header.php");
 require_once("sidebar.php");
-$sql = $db->read("admins");
-$row = $sql->fetchAll(PDO::FETCH_ASSOC);
+
 
 
 ?>
@@ -83,12 +82,10 @@ $row = $sql->fetchAll(PDO::FETCH_ASSOC);
 
       </div>
     <?php }
-    $sql = $db->read("admins");
-    $row = $sql->fetchAll(PDO::FETCH_ASSOC);
     ?>
 
     <!-- Admin Update İşlemi -->
-    <?php if (isset($_GET['adminUpdate'])) {?>
+    <?php if (isset($_GET['adminUpdate'])) { ?>
       <div class="card">
         <a style="margin-right: auto;" class="btn btn-danger btn-sm " href="admins.php">kapat</a>
         <div class="card-header">
@@ -103,11 +100,11 @@ $row = $sql->fetchAll(PDO::FETCH_ASSOC);
               $_POST,
               [
                 'insert_key' => 'admins_update',
-                'columns'=>'admins_id',
+                'columns' => 'admins_id',
                 'dir_key' => 'admins',
                 'file_name' => 'admins_file',
-                'requiredpass_key'=>'admins_pass',
-                'file_delete'=>'old_image'
+                'requiredpass_key' => 'admins_pass',
+                'file_delete' => 'old_image'
               ]
             );
 
@@ -166,12 +163,36 @@ $row = $sql->fetchAll(PDO::FETCH_ASSOC);
 
       </div>
     <?php } ?>
+
+
     <div class="card">
+      <!-- Admin Delete İşlemi -->
+      <?php if (isset($_GET['adminDelete'])) { ?>
+        <?php $status = $db->delete("admins", "admins_id", $_GET['admins_id'], $_GET['file_delete']); ?>
+        <?php if ($status['status']) { ?>
+          <script>
+            Swal.fire({
+              icon: 'success',
+              text: 'Silme Başarılı'
+            }).then(() => {
+              location.href = "users.php";
+            });
+          </script>
+        <?php } else { ?>
+          <script>
+            Swal.fire({
+              icon: 'error',
+              text: 'Silme Başarısız!'
+            }).then(() => {
+              location.href = "users.php";
+            });
+          </script>
+        <?php } ?>
+      <?php } ?>
 
       <div class="card-header">
         <h3 class="card-title">Yöneticiler</h3>
       </div>
-      <!-- /.card-header -->
       <div class="card-body">
         <a class="btn btn-success" href="?adminsInsert=true">Yeni Ekle</a>
         <table id="example1" class="table table-bordered table-striped">
@@ -186,7 +207,10 @@ $row = $sql->fetchAll(PDO::FETCH_ASSOC);
             </tr>
           </thead>
           <tbody>
-
+            <?php
+            $sql = $db->read("admins");
+            $row = $sql->fetchAll(PDO::FETCH_ASSOC);
+            ?>
             <?php foreach ($row as $key => $val) { ?>
               <tr>
                 <td><?php echo ($key + 1) ?></td>
@@ -194,13 +218,9 @@ $row = $sql->fetchAll(PDO::FETCH_ASSOC);
                 <td><?php echo $val['admins_namesurname'] ?></td>
                 <td><?php echo $val['admin_status'] ? 'Aktif' : 'Pasif' ?></td>
                 <td align="center" width="10"><a href="?adminUpdate&admins_id=<?php echo $val['admins_id'] ?>"><i class="fas fa-edit"></i></a></td>
-                <td align="center" width="10"><a class="text-danger" href=""><i class="fas fa-trash"></i></a></td>
+                <td align="center" width="10"><a admins_id='<?php echo $val['admins_id'] ?>' file='<?php echo $val['admins_file'] ?>' href="" class="text-danger delete-data"><i class="fas fa-trash"></i></a></td>
               </tr>
             <?php } ?>
-
-
-
-
           </tbody>
         </table>
       </div>
@@ -242,5 +262,26 @@ require_once("footer.php");
       "autoWidth": false
     }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
 
+  });
+</script>
+
+<script>
+  $(".delete-data").click(function(e) {
+    e.preventDefault();
+    Swal.fire({
+      title: 'Silmek istiyormusunuz?',
+      showDenyButton: true,
+      showCancelButton: true,
+      showConfirmButton: false,
+      denyButtonText: `Sil`,
+      cancelButtonText: `Kapat`
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isDenied) {
+        const id = $(this).attr("admins_id");
+        const file = $(this).attr("file");
+        location.href = "?adminDelete&admins_id=" + id + "&file_delete=" + file;
+      }
+    })
   });
 </script>

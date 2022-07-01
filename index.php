@@ -1,68 +1,19 @@
-<?php
-require_once("header.php");
-require_once("sidebar.php");
-?>
+<?php 
+require_once 'settings.php';
+ ?>
 
-
-<!-- Content Wrapper. Contains page content -->
-<div class="content-wrapper">
-  <!-- Content Header (Page header) -->
-  <div class="content-header">
-    <div class="container-fluid">
-      
-      <!-- <div class="row mb-2">
-        <div class="col-sm-6">
-          <h1 class="m-0">Dashboard</h1>
-        </div>
-      
-        <div class="col-sm-6">
-          <ol class="breadcrumb float-sm-right">
-            <li class="breadcrumb-item"><a href="#">Home</a></li>
-            <li class="breadcrumb-item active">Starter Page</li>
-          </ol>
-        </div>
-
-      </div> -->
-      <!-- /.row -->
-    </div><!-- /.container-fluid -->
-  </div>
-  <!-- /.content-header -->
-
-  <!-- Main content -->
-  <section class="content">
-
-    <!-- Default box -->
-    <div class="card">
-      <div class="card-header">
-        <h3 class="card-title">Dashboard</h3>
-
-        <div class="card-tools">
-          <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
-            <i class="fas fa-minus"></i>
-          </button>
-          <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
-            <i class="fas fa-times"></i>
-          </button>
-        </div>
-      </div>
-      <div class="card-body">
-        Sitenizi yan taraftan güncelleyebilirsiniz.
-      </div>
-      <!-- /.card-body -->
-      <!-- <div class="card-footer">
-          Footer
-        </div> -->
-      <!-- /.card-footer-->
-    </div>
-    <!-- /.card -->
-
-  </section>
-  <!-- /.content -->
-</div>
-<!-- /.content-wrapper -->
-
-
-
-<?php
-require_once("footer.php");
-?>
+ <!DOCTYPE html>
+ <html lang="en">
+ <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+ </head>
+ <body>
+    <h1>Selamlar hoşgeldiniz</h1>
+ <?php if ($settings['facebook']['settings_status']) { ?>
+    <h3>facebook adreslerimiz : <?php echo $settings['facebook']['settings_value'] ?></h3>
+ <?php }?>
+ </body>
+ </html>

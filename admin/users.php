@@ -1,8 +1,7 @@
 <?php
 require_once("header.php");
 require_once("sidebar.php");
-$sql = $db->read("users");
-$row = $sql->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
 
 <!-- Content Wrapper. Contains page content -->
@@ -16,11 +15,7 @@ $row = $sql->fetchAll(PDO::FETCH_ASSOC);
 
 
   <section class="content">
-    <?php if (isset($_GET['delete'])) { ?>
-      <?php if ($_GET['delete']) { ?>
-
-      <?php } ?>
-    <?php } ?>
+    <!-- Users Insert İşlemi -->
 
     <?php if (isset($_GET['usersInsert'])) { ?>
       <div class="card">
@@ -73,7 +68,7 @@ $row = $sql->fetchAll(PDO::FETCH_ASSOC);
 
       </div>
     <?php } ?>
-
+    <!-- Users Update İşlemi -->
     <?php if (isset($_GET['usersUpdate'])) { ?>
       <div class="card">
         <a style="margin-right: auto;" class="btn btn-danger btn-sm " href="users.php">kapat</a>
@@ -116,7 +111,7 @@ $row = $sql->fetchAll(PDO::FETCH_ASSOC);
             </div>
             <div class="col-md-12">
               <label class="form-label">Resim Seç</label>
-              <input type="file" class="form-control" name="users_file" >
+              <input type="file" class="form-control" name="users_file">
             </div>
             <div class="col-md-12 mt-3">
               <label class="form-label">Ad Soyad</label>
@@ -133,8 +128,8 @@ $row = $sql->fetchAll(PDO::FETCH_ASSOC);
             <div class="col-12 mt-3">
               <label class="form-label">Kullanıcı durum</label>
               <select class="form-control" name="users_status">
-                <option <?php echo $row_selected['users_status']==1?'selected':'' ?> value="1" selected>Aktif</option>
-                <option <?php echo $row_selected['users_status']==0?'selected':'' ?> value="0">Pasif</option>
+                <option <?php echo $row_selected['users_status'] == 1 ? 'selected' : '' ?> value="1" selected>Aktif</option>
+                <option <?php echo $row_selected['users_status'] == 0 ? 'selected' : '' ?> value="0">Pasif</option>
               </select>
             </div>
             <input type="hidden" name="old_image" value="<?php echo $row_selected['users_file'] ?>">
@@ -147,13 +142,42 @@ $row = $sql->fetchAll(PDO::FETCH_ASSOC);
 
       </div>
     <?php } ?>
-
     <div class="card">
+
+      <!-- Users Delete İşlemi -->
+      <?php if (isset($_GET['usersDelete'])) { ?>
+        <?php $status = $db->delete("users", "users_id", $_GET['users_id'], $_GET['file_delete']); ?>
+        <?php if ($status['status']) { ?>
+          <script>
+            Swal.fire({
+              icon: 'success',
+              text: 'Silme Başarılı'
+            }).then(() => {
+              location.href = "users.php";
+            });
+          </script>
+        <?php } else { ?>
+          <script>
+            Swal.fire({
+              icon: 'error',
+              text: 'Silme Başarısız!'
+            }).then(() => {
+              location.href = "users.php";
+            });
+          </script>
+        <?php } ?>
+      <?php } ?>
 
       <div class="card-header">
         <h3 class="card-title">Kullanıcılar</h3>
       </div>
-      <!-- /.card-header -->
+
+      <!-- Veri Çekme İşlemi -->
+      <?php
+      $sql = $db->read("users");
+      $row = $sql->fetchAll(PDO::FETCH_ASSOC);
+      ?>
+
       <div class="card-body">
         <a class="btn btn-success" href="?usersInsert=true">Yeni Ekle</a>
         <table id="example1" class="table table-bordered table-striped">
@@ -176,7 +200,7 @@ $row = $sql->fetchAll(PDO::FETCH_ASSOC);
                 <td><?php echo $val['users_mail'] ?></td>
                 <td><?php echo $val['users_status'] ? 'Aktif' : 'Pasif' ?></td>
                 <td align="center" width="10"><a href="users.php?usersUpdate&users_id=<?php echo $val['users_id'] ?>"><i class="fas fa-edit"></i></a></td>
-                <td align="center" width="10"><a class="text-danger delete-data" href="javascript:void(0)"><i class="fas fa-trash"></i></a></td>
+                <td align="center" width="10"><a admins_id='<?php echo $val['users_id'] ?>' file='<?php echo $val['users_file'] ?>' href="" class="text-danger delete-data"><i class="fas fa-trash"></i></a></td>
               </tr>
             <?php } ?>
 
@@ -240,7 +264,9 @@ require_once("footer.php");
     }).then((result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isDenied) {
-        location.href = "?delete=true";
+        const id = $(this).attr("admins_id");
+        const file = $(this).attr("file");
+        location.href = "?usersDelete&users_id=" + id + "&file_delete=" + file;
       }
     })
   });

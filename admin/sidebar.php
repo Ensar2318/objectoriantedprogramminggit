@@ -24,11 +24,20 @@
                   <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
                   <li class="nav-header">Menüler</li>
+                  <li class="nav-item">
+                      <a href="slider.php" class="nav-link">
+                          <i class="nav-icon fa fa-images"></i>
+                          <p>
+                              Slider
+                              <span class="badge badge-info right"></span>
+                          </p>
+                      </a>
+                  </li>
                   <li class="nav-item ">
                       <a href="#" class="nav-link ">
                           <i class="nav-icon fa fa-key"></i>
                           <p>
-                              Yönetim
+                              Kullanıcı işlemleri
                               <i class="right fas fa-angle-left "></i>
                           </p>
                       </a>
@@ -48,8 +57,24 @@
 
                       </ul>
                   </li>
-
-                  <li class="nav-header">EXAMPLES</li>
+                  <li class="nav-item ">
+                      <a href="#" class="nav-link ">
+                          <i class="nav-icon fa fa-key"></i>
+                          <p>
+                              Yönetim
+                              <i class="right fas fa-angle-left "></i>
+                          </p>
+                      </a>
+                      <ul class="nav nav-treeview">
+                          <li class="nav-item">
+                              <a href="settings.php" class="nav-link">
+                                  <i class="nav-icon fa fa-cog"></i>
+                                  <p>Site Ayarları</p>
+                              </a>
+                          </li>
+                      </ul>
+                  </li>
+                  <!-- <li class="nav-header">Ayarlar</li> -->
                   <li class="nav-item">
                       <a href="../calendar.html" class="nav-link">
                           <i class="nav-icon fa fa-key"></i>
